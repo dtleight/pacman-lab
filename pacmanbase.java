@@ -1,17 +1,17 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.Graphics;
 import javax.swing.*;
-import java.lang.reflect.*;
 import java.util.*;
 import java.io.*;
 
-// last updated 2/2020
-abstract class pacmanbase extends JFrame implements KeyListener
+abstract class pacmanbase extends JFrame
 {
     /* default values: */
     protected int mheight = 41;    // default height and width of maze
     protected int mwidth = 51;
+
+    protected int maze_height;
+    protected int maze_width;
 
     protected byte[][] M;    // the array for the maze
     public static final int SOUTH = 0;
@@ -44,11 +44,12 @@ abstract class pacmanbase extends JFrame implements KeyListener
         bh = bw = bh0;  mheight = mh0;  mwidth = mw0;
         ah = bh*mheight;
         aw = bw*mwidth;
+        maze_height = mh0;
+        maze_width = mw0;
         M = new byte[mheight][mwidth];  // initialize maze (all  0's - walls).
         this.setBounds(0,0,aw+10,10+ah+yoff);    
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.addKeyListener(this);
         try{Thread.sleep(500);} catch(Exception e) {} // Synch with system
         g = getGraphics();    //g.setColor(Color.red);
         setup();
@@ -73,12 +74,11 @@ abstract class pacmanbase extends JFrame implements KeyListener
         g.fill3DRect(0,yoff,aw,ah,true);  // fill raised rectangle
         g.setColor(pathcolor);
         try {
-            g.setFont(new Font("Serif",Font.BOLD,bh*3/4));      // might not work
+            g.setFont(new Font("Serif",Font.BOLD,bh*3/4));
         } catch(Exception gfe) {}
-        customize(); // optional startupcode
         loadgif(gifname);
         generateMaze(filepath); //Generate the maze
-        solve();  //Search for a goal node
+        search();  //Search for a goal node
     }   
 
     public void delay(int ms)
@@ -134,25 +134,11 @@ abstract class pacmanbase extends JFrame implements KeyListener
 
     /* Write a search function to solve the maze.
      */
-    abstract void solve(); // solve
+    abstract void search(); // solve
 
-    public void play() 
-    {
-        // code to setup game
-    }
     // for this part you may also define some other instance vars outside of
     // the play function.
 
-    // skeleton implementation of KeyListener interface
-    public void keyReleased(KeyEvent e) {}
-
-    public void keyTyped(KeyEvent e) {}
-
-    public void keyPressed(KeyEvent e) // override for key event handling
-    {
-        int key = e.getKeyCode();       // code for key pressed      
-        System.out.println("YOU JUST PRESSED KEY "+key);
-    }
     protected Map<String, Node> maze_graph;
     protected  String [][] mazeArray;
     protected  Node startNode = null;
@@ -172,10 +158,11 @@ abstract class pacmanbase extends JFrame implements KeyListener
     {
         //Parse file into 2D array
         maze_graph= new HashMap<String,Node>();
-        mazeArray = new String[9][28];
+        mazeArray = new String[maze_height][maze_width];
         try
         {
             Scanner sc = new Scanner(new BufferedReader(new FileReader(filepath)));
+            System.out.println(sc.nextLine());
             while(sc.hasNextLine()) {
                 for (int i=0; i<mazeArray.length; i++) {
                     String[] line = sc.nextLine().trim().split("");
@@ -195,17 +182,15 @@ abstract class pacmanbase extends JFrame implements KeyListener
         int[] DY = {1, 0, -1, 0};
 
         //Naive graph generation algorithm: O(8n^2)
-        int rows = 9;
-        int columns = 28;
         for(int tries = 0; tries < 2; tries++)
         {
-            for(int i = 0; i < rows; i++)
+            for(int i = 0; i < mazeArray.length; i++)
             {
-                for(int j = 0; j < columns; j++)
+                for(int j = 0; j < mazeArray[i].length; j++)
                 {
                     for(int k = 0; k <4; k++) //DX,DY vector
                     {
-                        if(inBounds(i+DX[k],rows) && inBounds(j+DY[k],columns))
+                        if(inBounds(i+DX[k],mazeArray.length) && inBounds(j+DY[k],mazeArray[i].length))
                         { 
                             String coord = coordify(i+DX[k], j+DY[k]);
                             int x = i + DX[k];
@@ -269,28 +254,29 @@ abstract class pacmanbase extends JFrame implements KeyListener
 
     public ArrayList<Node> permutate(ArrayList<Node> arr)
     {
-        //Permutation generation from printout - working
-        //delay(100);
-        for(int i = 0; i < arr.size(); i++)
-        {
-            int r = i + (int)(Math.random() * arr.size() - i); // r is between i and P.length -1
-            Node temp = arr.get(i);
-            arr.set(i,arr.get(i));
-            arr.set(i,temp);
-        }
+        Collections.shuffle(arr);
         return arr;
     }
 
     /**
-     * Main code
+     * Entrypoint
+     * If there are arguments read from the provided file, otherwise use the default maze.
      */
     public static void main(String[] args) throws Exception
     {
-        if(args.length > 0)
+        filepath = args.length > 0 ? args[0]: "Mazes/pacmaze.txt";
+        try
         {
-             filepath = args[0];  
+        Scanner sc = new Scanner(new BufferedReader(new FileReader(filepath)));
+        String[] line = sc.nextLine().split(",");
+        sc.close();
+        pacmanbase W = new studentcode(bh,Integer.parseInt(line[0]),Integer.parseInt(line[1]));
         }
-        pacmanbase W = new studentcode(bh,9,29);
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            System.out.println("Invalid file specified");
+        }
     }//main
 
 } // pacmanbase

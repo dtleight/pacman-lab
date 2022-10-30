@@ -1,18 +1,13 @@
-
-import java.util.Arrays;
-import java.awt.Graphics;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
-import java.io.*;
-class studentcode extends pacmanbase implements KeyListener
+class studentcode extends pacmanbase
 {
     public studentcode(int bh, int mh, int mw) // don't change constructor
     { 
         super(bh,mh,mw); 
     } 
 
-    public void solve()
+    public void search()
     {
         autodelay = true;
         Node currentNode = startNode;
@@ -96,33 +91,16 @@ class studentcode extends pacmanbase implements KeyListener
         System.out.println("Found a solution");
     }
 
-    public void trace()
-    {
-    }
-
-    //Initializes variables for play, all code goes in key Pressed.
-    private int playerX = 1,playerY = 1;
-    private int tries = 0;
-    @Override
-    public void play()
-    {
-        playerX = 1; playerY = 1;
-        usegif = true;
-        showvalue = false;
-        //drawdot(1,1);
-    }
-
     public void customize()
     {
-        Color wallcolor = Color.blue; // you need to import java.awt.Graphics;
-        Color pathcolor = Color.black; // look in superclass for available colors
-        Color dotcolor = Color.red; // color of solid circle (if !usegif)
-        Color pencolor = Color.yellow; // color of text
-        int dtime = 200; // 30 ms default delay time -applies to drawdot only
-        String gifname = "pacman.gif"; // name of .gif file to use instead of dot
-        boolean showvalue = true; // affects drawblock
-        boolean autodelay = true; // delays automatically after drawdot by dtime. But you can also set this to false and call delay(ms) yourself. This variable does not affect the drawblock function (and so does not affect digout).
-        boolean usegif=true; // if true, replaces dot with (animated) gif image.
+        wallcolor = Color.blue; // you need to import java.awt.Graphics;
+        pathcolor = Color.black; // look in superclass for available colors
+        dotcolor = Color.red; // color of solid circle (if !usegif)
+        pencolor = Color.yellow; // color of text
+        dtime = 200; // 30 ms default delay time -applies to drawdot only
+        showvalue = true; // affects drawblock
+        autodelay = true; // delays automatically after drawdot by dtime. But you can also set this to false and call delay(ms) yourself. This variable does not affect the drawblock function (and so does not affect digout).
+        usegif=true; // if true, replaces dot with (animated) gif image.
         gifname ="pacman.gif"; // filename of gif image in same directory
     }
 }//studentcode subclass

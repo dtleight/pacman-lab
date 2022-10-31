@@ -37,7 +37,7 @@ Part 2:
 Part 3:
     Write the funciton for breadth first search. 
     Breadth First search can be executed by running
-        java pacmanbase [path_to_maze] 1
+        java pacmanbase [path_to_maze] 2
 
 Part 4: 
     Create your own pacman maze and test your search algorithms on the maze. These Mazes will be used

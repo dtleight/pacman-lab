@@ -4,6 +4,14 @@ import javax.swing.*;
 import java.util.*;
 import java.io.*;
 
+enum SearchType
+{
+    Random,
+    DFS,
+    BFS
+
+}
+
 abstract class pacmanbase extends JFrame
 {
     /* default values: */
@@ -22,6 +30,7 @@ abstract class pacmanbase extends JFrame
     protected boolean showvalue = false; // affects drawblock
     protected boolean autodelay = true;  // delays automatically between drawdot
     protected boolean usegif = true;
+    protected static SearchType searchType = SearchType.Random;
 
     // graphical properties:
     protected static int bh = 24;     // height of a graphical block 24
@@ -132,18 +141,37 @@ abstract class pacmanbase extends JFrame
 
     abstract void customize();//This sets up maze generation parameters
 
-    /* Write a search function to solve the maze.
-     */
-    abstract void search(); // solve
+    /**
+     * Determine which search algorithm to run.
+     **/
+    public void search()
+    {
+        Node currentNode = startNode;
+        switch(searchType)
+        {
+            case Random: randomSearch(currentNode);
+            case DFS: dfsSearch(currentNode);
+            case BFS: bfsSearch(currentNode);
+        }
+    } // solve
 
-    // for this part you may also define some other instance vars outside of
-    // the play function.
+    abstract void randomSearch(Node currentNode);
+    abstract void dfsSearch(Node currentNode);
+    abstract void bfsSearch(Node currentNode);
 
+    public void playback()
+    {
+        //Pop direction off stack;
+
+    }
+
+    //Pac-Man specific instance variables
     protected Map<String, Node> maze_graph;
     protected  String [][] mazeArray;
     protected  Node startNode = null;
     protected Node goalNode = null;
     protected ArrayList<Node> goals = new ArrayList<Node>();
+    
     /**
      * Pacman Maze Generation Code
      * 
@@ -153,6 +181,7 @@ abstract class pacmanbase extends JFrame
      *  '*' : empty space
      *  's' : start space
      *  'd' : dot
+     *  'g' : ghost - not added yet
      */
     public  void generateMaze(String filepath)
     {
@@ -162,7 +191,7 @@ abstract class pacmanbase extends JFrame
         try
         {
             Scanner sc = new Scanner(new BufferedReader(new FileReader(filepath)));
-            System.out.println(sc.nextLine());
+           sc.nextLine();
             while(sc.hasNextLine()) {
                 for (int i=0; i<mazeArray.length; i++) {
                     String[] line = sc.nextLine().trim().split("");
@@ -260,12 +289,23 @@ abstract class pacmanbase extends JFrame
 
     /**
      * Entrypoint
-     * If there are arguments read from the provided file, otherwise use the default maze.
+     * Takes arguments for a file to read from and an integer for which search algorithm to run
+     * 1: Random Search
+     * 2: Depth First Search
+     * 3: Breadth First Search
      */
     public static void main(String[] args) throws Exception
     {
         filepath = args.length > 0 ? args[0]: "Mazes/pacmaze.txt";
         try
+        {
+            searchType = args.length > 1 ? SearchType.values()[Integer.parseInt(args[1])] : SearchType.Random;
+        }
+        catch(Exception e)
+        {
+            System.out.println("Invalid Search Type");
+        }
+        try 
         {
         Scanner sc = new Scanner(new BufferedReader(new FileReader(filepath)));
         String[] line = sc.nextLine().split(",");

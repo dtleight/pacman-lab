@@ -83,7 +83,7 @@ class Node {
     }
 
     /**
-     * This function returns the indexes of valid neighbor nodes
+     * This function returns an arraylist of valid neighbor nodes
      **/
     public ArrayList<Node> getNeighbors() {
         ArrayList<Node> validNodes = new ArrayList<Node>(); // This could be a set

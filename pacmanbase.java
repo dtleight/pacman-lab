@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+import java.awt.geom.AffineTransform;
 
 enum SearchType
 {
@@ -44,7 +45,8 @@ abstract class pacmanbase extends JFrame
     protected Color dotcolor = Color.red;
     protected Color pencolor = Color.yellow;    
     protected Image animatedgif;
-    protected String gifname = "pacman.gif";
+    protected Image mirroredGif;
+    protected String gifname = "assets/pacman.gif";
     protected static String filepath = "Mazes/pacmaze.txt";
 
     // constructor, args determine block size, maze height, and maze width
@@ -69,7 +71,9 @@ abstract class pacmanbase extends JFrame
     {
         try {
             animatedgif = Toolkit.getDefaultToolkit().getImage(filename);
+            mirroredGif = Toolkit.getDefaultToolkit().getImage(filename).getScaledInstance(-bw, -bh,Image.SCALE_DEFAULT);
             prepareImage(animatedgif,this);
+            prepareImage(mirroredGif, this);
             Thread.sleep(100); // Synch with system
         } catch(Exception e) {animatedgif=null; usegif=false;} 
     }//loadgif
@@ -113,19 +117,37 @@ abstract class pacmanbase extends JFrame
         if (autodelay) try{Thread.sleep(dtime);} catch(Exception e) {} 
     }
 
+    
     public void drawpacman(int y, int x)
     {
         if (usegif && animatedgif!=null)
         {
-            g.drawImage(animatedgif,x*bw,yoff+(y*bh),bw,bh,null);
+            g.drawImage(animatedgif,x*bw, yoff+(y*bh),bw,bh,null);
         }
         if (autodelay) try{Thread.sleep(dtime);} catch(Exception e) {} 
+    }
+
+    //Rotate pacman
+    public void rotate(int y, int x)
+    {
+        
+        AffineTransform affineTransform = new AffineTransform(); 
+        //rotate the image by 45 degrees 
+        Image image2 = animatedgif.getScaledInstance(bh*100, bw*100, Image.SCALE_DEFAULT);
+        Graphics2D graphics2d = (Graphics2D) g;
+        affineTransform.rotate(Math.toRadians(45), -100, -100); 
     }
 
     public void drawpellet(int y, int x)
     {
         g.setColor(Color.white);
         g.fillOval(x*bw + (bw/3),yoff+y*bh + (bh/3),bw/3,bh/3);
+    }
+    
+    public void drawpowerpellet(int y, int x)
+    {
+        g.setColor(Color.white);
+        g.fillOval(x*bw + bw/3 ,yoff+y*bh - bh/3 + (bh/2),bw/2,bh/2);
     }
 
     public void drawgif(int y, int x) { drawdot(y,x); }  //alias
@@ -181,6 +203,7 @@ abstract class pacmanbase extends JFrame
      *  '*' : empty space
      *  's' : start space
      *  'd' : dot
+     *  'o' : power dot
      *  'g' : ghost - not added yet
      */
     public  void generateMaze(String filepath)
@@ -226,8 +249,7 @@ abstract class pacmanbase extends JFrame
                             int y = j + DY[k];
                             if(maze_graph.containsKey(coordify(i,j)))
                             {
-                                if(mazeArray[x][y].equals("*")|| mazeArray[x][y].equals("s") || mazeArray[x][y].equals("d"))  
-                                {
+                                if(MazeComponent.fromString(mazeArray[x][y]) != MazeComponent.UNDEFINED){
                                     Node currNode;
                                     if(maze_graph.get(coord) != null)
                                     {
@@ -244,20 +266,24 @@ abstract class pacmanbase extends JFrame
 
                     }
                     maze_graph.putIfAbsent(coordify(i,j), new Node(i,j,coordify(i,j), mazeArray[i][j]));
-                    if(mazeArray[i][j].equals("s") || mazeArray[i][j].equals("*") || mazeArray[i][j].equals("d"))
+                    if(MazeComponent.fromString(mazeArray[i][j]) != MazeComponent.UNDEFINED)
                     {
                         M[i][j] = 1;
                         drawblock(i,j);
                     }
-                    if(mazeArray[i][j].equals("s"))
+                    if(MazeComponent.fromString(mazeArray[i][j]) == MazeComponent.StartSpace)
                     {
                         startNode = maze_graph.get(coordify(i,j));
                         drawdot(i,j);
                     }
-                    if(mazeArray[i][j].equals("d"))
+                    if(MazeComponent.fromString(mazeArray[i][j]) == MazeComponent.PowerPellet)
                     {
                         goalNode = maze_graph.get(coordify(i,j));
                         goals.add(goalNode);
+                        drawpowerpellet(i, j);
+                    }
+                    if(MazeComponent.fromString(mazeArray[i][j]) == MazeComponent.Pellet)
+                    {
                         drawpellet(i,j);
                     }
                 }
@@ -293,6 +319,7 @@ abstract class pacmanbase extends JFrame
      * 1: Random Search
      * 2: Depth First Search
      * 3: Breadth First Search
+     * 4: Djikstra's Algorithm
      */
     public static void main(String[] args) throws Exception
     {
@@ -318,5 +345,4 @@ abstract class pacmanbase extends JFrame
             System.out.println("Invalid file specified");
         }
     }//main
-
 } // pacmanbase

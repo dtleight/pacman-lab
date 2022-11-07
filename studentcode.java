@@ -34,7 +34,6 @@ class studentcode extends pacmanbase {
     }
 
     public void bfsSearch(Node currentNode) {
-        
     }
 
     public void customize() {
@@ -42,13 +41,13 @@ class studentcode extends pacmanbase {
         pathcolor = Color.black; // look in superclass for available colors
         dotcolor = Color.red; // color of solid circle (if !usegif)
         pencolor = Color.yellow; // color of text
-        dtime = 200; // 30 ms default delay time -applies to drawdot only
+        dtime = 100; // 30 ms default delay time -applies to drawdot only
         showvalue = false; // affects drawblock
         autodelay = true; // delays automatically after drawdot by dtime. But you can also set this to
                           // false and call delay(ms) yourself. This variable does not affect the
                           // drawblock function (and so does not affect digout).
         usegif = true; // if true, replaces dot with (animated) gif image.
-        gifname = "pacman.gif"; // filename of gif image in same directory
+        gifname = "assets/pacman.gif"; // filename of gif image in same directory
     }
 }// studentcode subclass
 
@@ -65,12 +64,14 @@ class Node {
     String representation; // Default space to unfilled
     int x;
     int y;
+    int weight;
     String coordinate;
 
     public Node(int x, int y, String coordinate, String representation) {
         this.x = x;
         this.y = y;
         this.coordinate = coordinate;
+        this.weight = MazeComponent.fromString(representation).getWeight();
         this.representation = representation;
     }
 

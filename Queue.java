@@ -13,4 +13,8 @@ public class Queue<T>
     {
         queue.add(t);
     }
+
+    public T peek() {
+        return queue.peek();
+    }
 }

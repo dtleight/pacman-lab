@@ -31,8 +31,11 @@ public class PriorityQueue<T>
     }
 
 
-    void resize(int newcap){
-        PriorityNode<T>[] temp = makeTArray(newcap);
+    /**
+     * Exponentially increase the capacity of the list
+     */
+    void resize(){
+        PriorityNode<T>[] temp = makeTArray(items.length * 2);
         System.arraycopy(items, 0, temp, 0, size);
         this.items = temp;
     };

@@ -36,6 +36,9 @@ class studentcode extends pacmanbase {
     public void bfsSearch(Node currentNode) {
     }
 
+    public void djikstraSearch(Node currentNode){
+    }
+
     public void customize() {
         wallcolor = Color.blue; // you need to import java.awt.Graphics;
         pathcolor = Color.black; // look in superclass for available colors

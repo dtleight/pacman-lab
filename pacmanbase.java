@@ -9,7 +9,8 @@ enum SearchType
 {
     Random,
     DFS,
-    BFS
+    BFS,
+    Djikstra
 
 }
 
@@ -174,12 +175,14 @@ abstract class pacmanbase extends JFrame
             case Random: randomSearch(currentNode);
             case DFS: dfsSearch(currentNode);
             case BFS: bfsSearch(currentNode);
+            case Djikstra: djikstraSearch(currentNode);
         }
     } // solve
 
     abstract void randomSearch(Node currentNode);
     abstract void dfsSearch(Node currentNode);
     abstract void bfsSearch(Node currentNode);
+    abstract void djikstraSearch(Node currentNode);
 
     public void playback()
     {

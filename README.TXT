@@ -11,6 +11,7 @@ Provided Mazes
 "Mazes/pacmaze.txt"
 "Mazes/pacmaze-2.txt"
 "Mazes/pacmaze-original.txt"
+"Mazes/pacmaze-3.txt"
 
 -----------------
 Search Indexes

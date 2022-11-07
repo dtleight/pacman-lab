@@ -53,9 +53,7 @@ public class PriorityQueue<T>
 
     public void push(T item, int priority)
     {
-        //Check if need for resize
-        size++;
-        items[size] = new PriorityNode<T>(item, priority); //Push onto the bottom of the array
+        
     }
 
     public void heapify()
@@ -72,7 +70,4 @@ public class PriorityQueue<T>
     {
         return false;
     }
-
-    
-
 }
